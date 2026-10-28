@@ -1,0 +1,17 @@
+{
+  "skip": ["/worktrees/", ".DS_Store", "/__pycache__/", ".lock"],
+  "repos": [
+    {
+      "key": "home",
+      "git_dir": "~/.harness.git",
+      "work_tree": "~",
+      "areas": [".claude/CLAUDE.md", ".claude/settings.json", ".claude-guardrails/guardrails.config.json", ".claude-guardrails/mcp-write-allowlist.txt"]
+    },
+    {
+      "key": "app",
+      "git_dir": "~/.harness-my-app.git",
+      "work_tree": "~/code/my-app",
+      "areas": [".claude/", "CLAUDE.md"]
+    }
+  ]
+}

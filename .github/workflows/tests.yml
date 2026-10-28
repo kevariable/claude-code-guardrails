@@ -1,0 +1,26 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: git config --global user.email ci@example.com && git config --global user.name ci
+      - run: python3 tests/run_tests.py
+      - name: no code comments
+        run: |
+          if grep -rnE '^\s*#[^!]' hooks tools tests --include=*.py; then exit 1; fi
+      - name: no long dashes
+        run: |
+          if grep -rnP '[\x{2013}\x{2014}]' --exclude-dir=.git .; then exit 1; fi

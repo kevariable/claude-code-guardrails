@@ -1,0 +1,44 @@
+DENY|m|git commit -m x
+DENY|f|cd {m} && git commit -m x
+DENY|f|git -C {m} commit -am x
+DENY|m|git add . && git commit -m x
+allow|f|git commit -m x
+DENY|m|git push
+DENY|f|git push origin master
+DENY|f|git push origin HEAD:main
+DENY|f|git push --force origin +master
+allow|f|git push -u origin feat/x
+allow|f|git push
+DENY|f|git push --no-verify
+allow|m|git log --oneline | head
+allow|f|git checkout master && git pull
+allow|m|echo "git commit"
+DENY|f|php artisan migrate:fresh --env=production
+allow|f|php artisan migrate:fresh
+allow|m|git checkout -b feat/new && git commit -m x
+allow|m|git switch -c feat/new && git add . && git commit -m x
+DENY|m|git checkout README.md && git commit -m x
+DENY|f|git checkout master && git commit -m x
+allow|m|git checkout -b feat/new && git push -u origin feat/new
+allow|m|cat > notes.txt <<'EOF'\ngit commit -m x\nEOF
+DENY|m|cat > notes.txt <<'EOF'\nhello\nEOF\ngit commit -m x
+DENY|f|git checkout master && git push origin HEAD
+DENY|m|git push origin HEAD
+DENY|m|git push origin @
+allow|f|git push origin HEAD
+allow|f|git push -u origin HEAD
+DENY|m|bash -c 'git commit -m x'
+DENY|f|sh -c "git push origin master"
+DENY|f|bash -lc 'git checkout master && git push origin HEAD'
+DENY|f|bash -c 'git checkout master && git commit -m x'
+DENY|f|zsh -c "cd {m} && git commit -m x"
+allow|f|bash -c 'git push origin feat/x'
+DENY|m|eval "git commit -m x"
+allow|f|git commit -m "fix: a && b; c"
+allow|f|git log 2>&1 | head
+DENY|m|psql -c "DROP DATABASE app" prod-db
+allow|m|psql -c "DROP DATABASE app" localhost
+DENY|m|terraform destroy -var env=prod
+allow|m|terraform plan -var env=prod
+DENY|m|rm -rf /
+allow|m|rm -rf ./build

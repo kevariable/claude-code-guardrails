@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "ask": [
+      "Bash(gh pr merge:*)",
+      "Bash(gh workflow run:*)",
+      "Bash(gh release create:*)",
+      "Bash(gh secret set:*)",
+      "Bash(terraform apply:*)",
+      "mcp__your-crm__send_email",
+      "mcp__your-crm__delete_contact",
+      "mcp__claude_ai_Slack__slack_send_message",
+      "mcp__claude_ai_Slack__slack_schedule_message"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/branch-guard.py"},
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/hook-health.py"}
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/gate-unreviewed-mcp-writes.py"}
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/block-dangerous-git.py"},
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/pre-push-evidence.py", "timeout": 600}
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/format-on-write.py"}
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {"type": "command", "command": "python3 {{GUARDRAILS_DIR}}/hooks/audit-mcp-actions.py"}
+        ]
+      }
+    ]
+  }
+}

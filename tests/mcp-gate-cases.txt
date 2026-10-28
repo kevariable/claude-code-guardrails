@@ -1,0 +1,14 @@
+allow|mcp__your-crm__get_contact
+allow|mcp__your-crm__list_deals
+allow|mcp__your-crm__search_notes
+allow|mcp__your-crm__add_note
+allow|mcp__claude_ai_Slack__slack_send_message_draft
+allow|mcp__claude_ai_Slack__slack_read_channel
+allow|mcp__some-local-tool__str_replace
+allow|mcp__some-local-tool__create_file
+ask|mcp__your-crm__send_email
+ask|mcp__your-crm__delete_contact
+ask|mcp__your-crm__update_deal_stage
+ask|mcp__your-crm__brand-new-send-thing
+ask|mcp__claude_ai_Slack__slack_add_reaction
+ask|mcp__claude_ai_Slack__slack_schedule_message

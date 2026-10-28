@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+guardrails.config.json
+tools/harness-vcs/harness-vcs.json
+.DS_Store

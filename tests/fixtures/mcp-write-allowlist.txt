@@ -1,0 +1,2 @@
+mcp__your-crm__add_note  # internal note
+mcp__claude_ai_Slack__slack_send_message_draft  # draft only

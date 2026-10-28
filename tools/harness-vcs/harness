@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")")" && pwd)"
+
+repos() {
+    python3 - "$here" <<'PY'
+import sys
+sys.path.insert(0, sys.argv[1])
+from harness_vcs import load
+for r in load()["repos"]:
+    print(r["key"], r["git_dir"], r["work_tree"])
+PY
+}
+
+run() {
+    local key="$1"; shift
+    local line
+    line="$(repos | awk -v k="$key" '$1 == k')"
+    [[ -z "$line" ]] && { echo "unknown harness repo: $key" >&2; exit 1; }
+    read -r _ git_dir work_tree <<<"$line"
+    (cd "$work_tree" && git --git-dir="$git_dir" --work-tree="$work_tree" "$@")
+}
+
+case "${1:-}" in
+    ""|-h|--help)
+        echo "Usage: harness <key> <git args> | harness all <git args> | harness init | harness list"
+        ;;
+    list)
+        repos
+        ;;
+    init)
+        while read -r key git_dir work_tree; do
+            if [[ -d "$git_dir" ]]; then
+                echo "$key: $git_dir exists"
+                continue
+            fi
+            git init -q --bare "$git_dir"
+            git --git-dir="$git_dir" config status.showUntrackedFiles no
+            printf '*\n' > "$git_dir/info/exclude.harness"
+            git --git-dir="$git_dir" config core.excludesFile "$git_dir/info/exclude.harness"
+            echo "$key: created $git_dir for $work_tree (add files with: harness $key add -f <path>)"
+        done < <(repos)
+        ;;
+    all)
+        shift
+        while read -r key _ _; do
+            echo "== $key"
+            run "$key" "$@" || true
+        done < <(repos)
+        ;;
+    *)
+        run "$@"
+        ;;
+esac
